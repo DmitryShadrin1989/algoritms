@@ -8,30 +8,25 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-// Факторизация
-public class J {
+public class J2 {
     public static void main(String[] args) throws IOException {
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             int a = Integer.parseInt(reader.readLine());
 
             List<Integer> primes = getPrimes(a);
 
+            if (primes.isEmpty()) {
+                System.out.println(a);
+                return;
+            }
+
             ArrayList<Integer> result = new ArrayList<>();
             while (a>1) {
                 int divider = a;
-                if(a%2==0) {
-                    divider = 2;
-                }
-                else {
-                    //divider = 3;
-//                    while(a%divider!=0){
-//                        divider+=2;
-//                    }
-                    for (Integer i: primes) {
-                        if (a%i == 0) {
-                            divider = i;
-                            break;
-                        }
+                for (Integer i: primes) {
+                    if (a%i == 0) {
+                        divider = i;
+                        break;
                     }
                 }
                 result.add(divider);
@@ -43,7 +38,8 @@ public class J {
         }
     }
 
-    public static List<Integer> getPrimes(int max) {
+    private static List<Integer> getPrimes(int numer) {
+        int max = (int) Math.round(Math.sqrt(numer));
         boolean[] isPrime = new boolean[max];
         Arrays.fill(isPrime, true);
 
