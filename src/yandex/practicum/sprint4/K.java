@@ -72,48 +72,46 @@ import java.util.ArrayList;
 public class K {
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            ArrayList<Kordinat> stationsMetro = new ArrayList<>();
+            ArrayList<MetroStation> stationsMetro = new ArrayList<>();
             Integer n = Integer.parseInt(reader.readLine());
             for (int i = 0; i < n; i++) {
                 String[] strings = reader.readLine().split(" ");
-                stationsMetro.add(new Kordinat(Integer.parseInt(strings[0]), Integer.parseInt(strings[1]), i+1));
+                stationsMetro.add(new MetroStation(Integer.parseInt(strings[0]), Integer.parseInt(strings[1]), i+1));
             }
 
-            ArrayList<Kordinat> stationsBus = new ArrayList<>();
             Integer m = Integer.parseInt(reader.readLine());
+            int maxCountBusStations = 0;
+            int maxNumberStation = 0;
             for (int j = 0; j < m; j++) {
-                String[] strings = reader.readLine().split(" ");
-                stationsBus.add(new Kordinat(Integer.parseInt(strings[0]), Integer.parseInt(strings[1]), j+1));
-            }
-
-            int maxCountStationBus = 0;
-            int relevantStationMetro = 0;
-            for (Kordinat metro : stationsMetro) {
-                int currentCount = 0;
-                for (Kordinat bus : stationsBus) {
-                    double size = Math.sqrt(Math.pow((metro.x - bus.x), 2) + Math.pow((metro.y - bus.y), 2));
-                    if (size<= 20d) {
-                        currentCount++;
+                String[] busStrings = reader.readLine().split(" ");
+                int xBus = Integer.parseInt(busStrings[0]);
+                int yBus = Integer.parseInt(busStrings[1]);
+                for (MetroStation metro : stationsMetro) {
+                    double size = Math.pow((metro.x - xBus), 2) + Math.pow((metro.y - yBus), 2);
+                    if (size<= 400d) {
+                        ++metro.countBusStations;
+                    }
+                    if (maxCountBusStations < metro.countBusStations) {
+                        maxCountBusStations = metro.countBusStations;
+                        maxNumberStation = metro.numberStation;
                     }
                 }
-                if (currentCount>maxCountStationBus) {
-                    maxCountStationBus = currentCount;
-                    relevantStationMetro = metro.number;
-                }
             }
-            System.out.println(relevantStationMetro);
+            System.out.println(maxNumberStation);
         }
     }
 
-    public static class Kordinat {
-        int number;
+    public static class MetroStation {
+        int numberStation;
+        int countBusStations;
         int x;
         int y;
 
-        public Kordinat(int x, int y, int number) {
-            this.number = number;
+        public MetroStation(int x, int y, int numberStation) {
+            this.numberStation = numberStation;
             this.x = x;
             this.y = y;
+            this.countBusStations = 0;
         }
     }
 }
