@@ -49,7 +49,6 @@ w — его вес ( 1 ≤ u, v ≤ n, 0 ≤ w ≤ 10000). В графе мог
 Oops! I did it again
  */
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -125,15 +124,29 @@ public class A {
         int end;
         int weight;
 
-        public Edge(int vertex1, int vertex2, int weight) {
-            this.start = vertex1;
-            this.end = vertex2;
+        public Edge(int start, int end, int weight) {
+            this.start = start;
+            this.end = end;
             this.weight = weight;
         }
 
         @Override
         public int compareTo(Edge other) {
-            return other.weight - this.weight;
+            int result;
+            result = other.weight - this.weight;
+            if (result == 0) {
+                result = other.end;
+            }
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Edge{" +
+                    "start=" + start +
+                    ", end=" + end +
+                    ", weight=" + weight +
+                    '}';
         }
     }
 }
