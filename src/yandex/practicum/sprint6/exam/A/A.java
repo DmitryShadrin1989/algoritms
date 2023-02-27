@@ -49,6 +49,22 @@ w — его вес ( 1 ≤ u, v ≤ n, 0 ≤ w ≤ 10000). В графе мог
 Oops! I did it again
  */
 
+/*
+-- ПРИНЦИП РАБОТЫ --
+
+
+-- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
+
+
+-- ВРЕМЕННАЯ СЛОЖНОСТЬ --
+
+
+-- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
+
+
+Успешная посылка - https://contest.yandex.ru/contest/25070/run-report/82996456/
+ */
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
