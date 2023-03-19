@@ -1,4 +1,5 @@
 package yandex.practicum.sprint6.exam.A;
+
 /*
 A. Дорогая сеть
 
@@ -114,12 +115,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.TreeSet;
+import java.util.PriorityQueue;
 
-public class A {
-    static TreeSet<Edge> edges = new TreeSet<>();
-    static ArrayList<Edge> maxSpanningTree = new ArrayList<>();
-    static HashMap<Integer, ArrayList<Edge>> notAdded = new HashMap<>();
+public class A1 {
+
+    static HashMap<Integer, ArrayList<Edge>> graph = new HashMap<>();
+    static PriorityQueue<Edge> edges = new PriorityQueue<>();
+    static boolean[] added;
+    static int weightMaxSpanningTree = 0;
 
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
@@ -127,9 +130,8 @@ public class A {
             int countVertex = Integer.parseInt(strings[0]);
             int countEdge = Integer.parseInt(strings[1]);
 
-            HashMap<Integer, ArrayList<Edge>> map = new HashMap<>();
             for (int i = 0; i < countVertex; i++) {
-                map.put(i+1, new ArrayList<>());
+                graph.put(i + 1, new ArrayList<>());
             }
             for (int i = 0; i < countEdge; i++) {
                 String[] s = reader.readLine().split(" ");
@@ -137,47 +139,48 @@ public class A {
                 int vertex2 = Integer.parseInt(s[1]);
                 int weight = Integer.parseInt(s[2]);
 
-                Edge edge1 = new Edge(vertex1, vertex2, weight);
-                map.get(vertex1).add(edge1);
-                Edge edge2 = new Edge(vertex2, vertex1, weight);
-                map.get(vertex2).add(edge2);
+                if (vertex1 != vertex2) {
+                    Edge edge1 = new Edge(vertex1, vertex2, weight);
+                    graph.get(vertex1).add(edge1);
+                    Edge edge2 = new Edge(vertex2, vertex1, weight);
+                    graph.get(vertex2).add(edge2);
+                }
             }
-            findMaxST(map);
+            added = new boolean[countVertex];
+            findMaxST();
         }
     }
 
-    public static void findMaxST(HashMap<Integer, ArrayList<Edge>> graph) {
-        notAdded = graph;
+    public static void findMaxST() {
         addVertex(1);
 
-        while (notAdded.size() != 0 && edges.size() != 0) {
-            Edge maxEdge = edges.pollFirst();
-            if (notAdded.containsKey(maxEdge.end)) {
-                maxSpanningTree.add(maxEdge);
+        while (edges.size() != 0) {
+            Edge maxEdge = edges.poll();
+            if (!added[maxEdge.end - 1]) {
+                weightMaxSpanningTree += maxEdge.weight;
                 addVertex(maxEdge.end);
             }
         }
-        if (notAdded.size() != 0) {
-            System.out.println("Oops! I did it again");
-        } else {
-            int weight = 0;
-            for (Edge edge:maxSpanningTree) {
-                weight += edge.weight;
+        for (boolean check : added) {
+            if (!check) {
+                System.out.println("Oops! I did it again");
+                return;
             }
-            System.out.println(weight);
         }
+        System.out.println(weightMaxSpanningTree);
     }
 
     public static void addVertex(int v) {
-        ArrayList<Edge> edgeArrayList = notAdded.remove(v);
-        for (Edge edge:edgeArrayList) {
-            if (edge.start == v && notAdded.containsKey(edge.end)) {
+        ArrayList<Edge> edgeArrayList = graph.get(v);
+        added[v-1] = true;
+        for (Edge edge : edgeArrayList) {
+            if (edge.start == v && !added[edge.end-1 ]) {
                 edges.add(edge);
             }
         }
     }
 
-    static class Edge implements Comparable<Edge>{
+    static class Edge implements Comparable<Edge> {
         int start;
         int end;
         int weight;
@@ -208,3 +211,4 @@ public class A {
         }
     }
 }
+

@@ -112,39 +112,39 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Stack;
 
-public class B {
+public class B1 {
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             int countVertex = Integer.parseInt(reader.readLine());
-            HashMap<Integer, ArrayList<Integer>> map = new HashMap<>();
+            ArrayList<Integer>[] graph = new ArrayList[countVertex];
+
             for (int i = 1; i < countVertex; i++) {
                 String[] strings = reader.readLine().split("");
                 for (int j = 0; j < strings.length; j++) {
                     int key;
                     int value;
                     if (strings[j].equals("R")) {
-                        key = i;
-                        value = j+1+i;
+                        key = i-1;
+                        value = j+i+1;
                     } else {
-                        key = j+1+i;
+                        key = j+i;
                         value = i;
                     }
-                    if (map.containsKey(key)) {
-                        map.get(key).add(value);
+                    if (graph[key] != null) {
+                        graph[key].add(value);
                     } else {
                         ArrayList<Integer> arrayList = new ArrayList<>();
                         arrayList.add(value);
-                        map.put(key, arrayList);
+                        graph[key] = arrayList;
                     }
                 }
             }
 
             int[] color = new int[countVertex];
             for (int i = 0; i < countVertex; i++) {
-                if (color[i] == 0 && checkingForCycle(map, color, i+1)) {
+                if (color[i] == 0 && checkingForCycle(graph, color, i+1)) {
                     System.out.println("NO");
                     return;
                 }
@@ -153,7 +153,7 @@ public class B {
         }
     }
 
-    public static boolean checkingForCycle(HashMap<Integer, ArrayList<Integer>> map, int[] color, int startVertex) {
+    public static boolean checkingForCycle(ArrayList<Integer>[] graph, int[] color, int startVertex) {
         Stack<Integer> stack = new Stack<>();
         stack.push(startVertex);
         while (!stack.isEmpty()) {
@@ -161,7 +161,7 @@ public class B {
             if (color[v-1] == 0) {
                 color[v-1] = 1;
                 stack.push(v);
-                ArrayList<Integer> arrayList = map.get(v);
+                ArrayList<Integer> arrayList = graph[v-1];
                 if (arrayList == null) continue;
                 for (int i = 0; i < arrayList.size(); i++) {
                     int u = arrayList.get(i);
