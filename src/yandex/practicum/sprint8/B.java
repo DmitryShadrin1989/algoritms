@@ -60,6 +60,49 @@ papa
 FAIL
  */
 
-public class B {
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
+public class B {
+    public static void main(String[] args) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+            String s1 = reader.readLine();
+            String s2 = reader.readLine();
+
+            if (Math.abs(s1.length() - s2.length())>1) {
+                System.out.println("FAIL");
+                return;
+            }
+
+            char[] chars1 = s1.toCharArray();
+            char[] chars2 = s2.toCharArray();
+
+            int cursorS1 = 0;
+            int cursorS2 = 0;
+            int countWrong = 0;
+            while (cursorS1 < s1.length() && cursorS2 < s2.length()) {
+                if (chars1[cursorS1] != chars2[cursorS2]) {
+                    ++countWrong;
+                    if (countWrong<2) {
+                        if (s1.length()>s2.length()) {
+                            cursorS1++;
+                        } else if (s1.length()<s2.length()) {
+                            cursorS2++;
+                        } else {
+                            cursorS1++;
+                            cursorS2++;
+                        }
+                        continue;
+                    } else {
+                        System.out.println("FAIL");
+                        return;
+                    }
+                }
+                cursorS1++;
+                cursorS2++;
+            }
+            System.out.println("OK");
+        }
+    }
 }
