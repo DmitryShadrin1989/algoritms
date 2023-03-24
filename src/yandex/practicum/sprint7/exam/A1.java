@@ -56,14 +56,14 @@ x
 Для того чтобы не выходить за пределы двумерного массива добавлена и проинициализирована "каемка" слева и сверху.
 
 -- ВРЕМЕННАЯ СЛОЖНОСТЬ --
-Временная сложность для инициализации каемки будет O(N) + 0(M), где N и M длинны строк.
+Временная сложность для инициализации каемки будет O(M), где M длинна одной из строк.
 Временна сложность для заполнения двумерного массива dp[][] будет O(N*M), т.к. мы должны заполнить каждую ячейку массива.
-Общая временная сложность будет O(N+M+N*M) ~ O(N*M)
+Общая временная сложность будет O(M+N*M) ~ O(N*M)
 
 -- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
-Пространственная сложность будет O((N+1)*(M+1)) ~ O(N*M)
+Пространственная сложность будет O(2*(M+1)) ~ O(M)
 
-Успешная посылка - https://contest.yandex.ru/contest/25597/run-report/84392146/
+Успешная посылка - https://contest.yandex.ru/contest/25597/run-report/84459348/
  */
 
 import java.io.BufferedReader;
@@ -89,30 +89,29 @@ public class A1 {
                 }
             }
 
+            int count = 1;
+            int previousRow = 0;
             int currentRow = 1;
-            while (currentRow <= lengthS1) {
-                dp[1][0] = currentRow;
+            while (count <= lengthS1) {
+                dp[currentRow][0] = count;
 
                 for (int j = 1; j <= lengthS2; j++) {
-                    int a = dp[0][j] + 1;
-                    int b = dp[1][j-1] + 1;
-                    int c = dp[0][j-1];
-                    if (s1.charAt(currentRow-1) != s2.charAt(j-1)) {
+                    int a = dp[previousRow][j] + 1;
+                    int b = dp[currentRow][j-1] + 1;
+                    int c = dp[previousRow][j-1];
+                    if (s1.charAt(count-1) != s2.charAt(j-1)) {
                         c += 1;
                     }
                     int min = Math.min(a, b);
-                    dp[1][j] = Math.min(min, c);
+                    dp[currentRow][j] = Math.min(min, c);
                 }
-
-                if (currentRow != lengthS1) {
-                    for (int j = 0; j <= lengthS2; j++) {
-                        dp[0][j] = dp[1][j];
-                        dp[1][j] = 0;
-                    }
+                if (count != lengthS1) {
+                    previousRow = 1 - previousRow;
+                    currentRow = 1 - currentRow;
                 }
-                currentRow++;
+                count++;
             }
-            System.out.println(dp[1][lengthS2]);
+            System.out.println(dp[currentRow][lengthS2]);
         }
     }
 }
