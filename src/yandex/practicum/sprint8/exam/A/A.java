@@ -45,13 +45,14 @@ aba
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Stack;
 
 public class A {
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
 
-            System.out.println(unpackString2(reader.readLine()));
+            System.out.println(unpackString3(reader.readLine()));
 
 
 //            int n = Integer.parseInt(reader.readLine());
@@ -152,21 +153,51 @@ public class A {
                 int factorInt = Integer.parseInt(String.valueOf((char) factor));
                 String s = intermediateResult.reverse().toString();
 
-                if (s.length() == 0) {
-                    s = decodeString.toString();
+                for (int j = 0; j < factorInt; j++) {
+                    decodeString.append(s);
                 }
-
-                for (int j = 0; j < factorInt-1; j++) {
-                    intermediateResult.append(s);
-                }
-
-
-                decodeString.append(intermediateResult);
 
             } else {
                 stack.push(currentByte);
             }
         }
         return decodeString.toString();
+    }
+
+    static String unpackString3(String string) {
+
+        byte[] bytes = string.getBytes();
+        Stack<Byte> stack = new Stack<>();
+        StringBuilder decodeString = new StringBuilder();
+        //3[a]2[r2[t]]
+        for (int i = 0; i < bytes.length; i++) {
+            byte currentByte = bytes[i];
+
+            if ((char) currentByte == ']') {
+                ArrayList<Byte> byteArrayList = new ArrayList<>();
+
+                while (stack.peek() != '[') {
+                    byteArrayList.add(stack.pop());
+                }
+                stack.pop();
+                byte factor = stack.pop();
+                int factorInt = Integer.parseInt(String.valueOf((char) factor));
+                for (int j = 0; j < factorInt; j++) {
+                    for (int k = byteArrayList.size()-1; k>=0; k--) {
+                        stack.push(byteArrayList.get(k));
+                    }
+                }
+            } else {
+                stack.push(currentByte);
+            }
+        }
+        StringBuilder result = new StringBuilder();
+        while (!stack.isEmpty()) {
+            byte b = stack.pop();
+            result.append((char) b);
+        }
+
+        return result.reverse().toString();
+
     }
 }
