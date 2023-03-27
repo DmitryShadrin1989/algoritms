@@ -45,20 +45,20 @@ aba
 -- ПРИНЦИП РАБОТЫ --
 Программа использует два метода:
 1. Распаковка строки unpackString.
-Для реализации использовал Stack<String> (перепробовал массу вариантов и этот оказался самым быстрым).
-Обходим переданную строку посимвольно и все кладем в стек пока не встретим закрывающую скобку - ']'.
-Тогда мы начинаем доставать элементы из стека и конкатенировать строку пока не встретим открывающую скобку - '['.
-За ней должен стоять множитель n, по условию задачи это "однозначное натуральное число".
-Повторяем конкатенированную строку n раз и кладем обратно в стек, т.е. мы раскрыли одну скобку и положили получившееся значение обратно.
-Так повторяем пока не пройдем всю строку. Далее начинаем вынимать элементы из стека в обратном порядке.
-
 2. Поиск индекса которым заканчивается наибольший префикс для строк findMaxPrefIdx выполняется для пары сравниваемых строк.
-Применяется принцип бинарного поиска, т.е. мы делим все время строку пополам, чтобы найти максимальный индекс на котором строки равны.
-Для оптимизации добавил, чтобы для правой границы передавался уже вычисленный на предыдущей итерации максимальный индекс totalMaxPrefIdx.
-Он подставляется в качестве правой границы.
 
 -- ДОКАЗАТЕЛЬСТВО КОРРЕКТНОСТИ --
+Для реализации распаковки использовал один Stack<Character>.
+Обходим переданную строку посимвольно и все кладем в стек пока не встретим закрывающую скобку - ']'.
+Тогда мы начинаем доставать элементы из стека и класть значения в ArrayList пока не встретим символ - '['.
+За ней должен стоять множитель n, по условию задачи это "однозначное натуральное число".
+Обходим ArrayList в обратном порядке n раз и кладем обратно в стек символы, т.е. мы раскрыли одну скобку и положили получившееся значение обратно.
+Так повторяем пока не пройдем всю строку. Далее начинаем вынимать элементы из стека в обратном порядке и склеиваем все в результат.
 
+Для оптимизации поиска добавил максимальный индекс уже полученного на предыдущих этапах общего префикса totalMaxPrefIdx
+(для первого сравнения возьмем минимальную длину сравниваемых строк).
+Т.е. нет смысла итерироваться по строкам больше этого значения. Само сравнение выполняется по символьно, если при сравнении получили false,
+то завершаем цикл и возвращаем счетчик (сколько прошли символов).
 
 -- ВРЕМЕННАЯ СЛОЖНОСТЬ --
 По распаковке. Процедура выполняется для каждой строки, проходит по всем элементам исходной (запакованной) строки и
@@ -66,129 +66,88 @@ aba
 K - максимальная длинна распакованной строки.
 
 По поиску индекса наибольшего префикса. Процедура сравнивает пары распакованных строк т.е. N-1, где N - количество строк.
-Для каждой такой пары сравнение выполняется за O(logK), где K - длинная распакованной строки.
+Для каждой такой пары сравнение выполняется за O(logK), где K - максимальная длинна распакованной строки.
 Т.е. общая сложность поиска индекса O((N-1)logK).
 
 Общая временная сложность алгоритма O(N*(M + K) + (N-1)*logK) ~ O(N*K)
 
 -- ПРОСТРАНСТВЕННАЯ СЛОЖНОСТЬ --
-Т.к. массив String[] фиксированного размера = 2, т.к. мы в момент времени храним максимум две строки для сравнения и
-вычисления максимального общего префикса и потом переиспользуем его. Пространственная сложность будет O(2*K),
+Размер массива String[] = 2, т.к. мы в момент времени храним максимум две строки для сравнения (текущую и предыдущую) и
+вычисления максимального общего префикса и потом пере используем его. Пространственная сложность будет O(2*K),
 K - максимальная длинная распакованной строки.
 
-Успешная посылка - https://contest.yandex.ru/contest/26133/run-report/84617614/
+Успешная посылка - https://contest.yandex.ru/contest/26133/run-report/84686179/
  */
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Stack;
 
-public class A {
+public class A2 {
     public static void main(String[] args) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
 
             int n = Integer.parseInt(reader.readLine());
-            String[] strings = new String[n];
-            for (int i = 0; i < n; i++) {
-                strings[i] = reader.readLine();
-            }
-
-            if (strings.length == 1) {
-                System.out.println(unpackString(strings[0]));
+            if (n == 1) {
+                System.out.println(unpackString(reader.readLine()));
                 return;
             }
 
+            String[] strings = new String[2];
+            int previousString = 0;
+            int currentString = 1;
             int totalMaxPrefIdx = -1;
             for (int i = 0; i < n; i++) {
-                strings[i] = unpackString(strings[i]);
+                strings[currentString] = unpackString(reader.readLine());
 
                 if (i == 0) {
+                    previousString = 1 - previousString;
+                    currentString = 1 - currentString;
                     continue;
                 }
-                String currentString = strings[i];
-                String prevString = strings[i-1];
 
-                int currentMaxPrefIdx = findMaxPrefIdx(currentString, prevString, totalMaxPrefIdx);
-
+                int currentMaxPrefIdx = findMaxPrefIdx(strings, totalMaxPrefIdx);
                 if (totalMaxPrefIdx == -1) {
                     totalMaxPrefIdx = currentMaxPrefIdx;
                 }
 
                 totalMaxPrefIdx = Math.min(totalMaxPrefIdx, currentMaxPrefIdx);
+                previousString = 1 - previousString;
+                currentString = 1 - currentString;
             }
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < totalMaxPrefIdx; i++) {
-                result.append(strings[0].charAt(i));
-            }
-            System.out.println(result);
+            System.out.println(strings[currentString].substring(0, totalMaxPrefIdx));
         }
     }
 
-    private static int findMaxPrefIdx(String currentString, String prevString, int totalMaxPrefIdx) {
-        int left = 0;
-        int right = totalMaxPrefIdx == -1 ? Math.min(currentString.length(), prevString.length()) : totalMaxPrefIdx;
-        int mid;
-        while (right - left > 1) {
-            mid = (left + right) / 2;
-
-            if (currentString.charAt(mid) == prevString.charAt(mid)) {
-                left = mid;
-            } else {
-                right = mid;
+    private static int findMaxPrefIdx(String[] strings, int totalMaxPrefIdx) {
+        int n = totalMaxPrefIdx == -1 ? Math.min(strings[0].length(), strings[1].length()) : totalMaxPrefIdx;
+        int len = 0;
+        for (int i = 0; i < n; i++) {
+            if (strings[0].charAt(i) != strings[1].charAt(i)) {
+                break;
             }
+            len++;
         }
-        return right;
+        return len;
     }
 
     static String unpackString(String string) {
-        String[] strings = string.split("");
-        Stack<String> stack = new Stack<>();
-        for (int i = 0; i < strings.length; i++) {
-            String currenString = strings[i];
-
-            if (currenString.equals("]")) {
-                StringBuilder local = new StringBuilder();
-
-                while (!stack.peek().equals("[")) {
-                    local.append(stack.pop());
-                }
-                stack.pop();
-                int factorInt = Integer.parseInt(stack.pop());
-                String s = local.toString();
-                for (int j = 0; j < factorInt-1; j++) {
-                    local.append(s);
-                }
-                stack.push(local.toString());
-            } else {
-                stack.push(currenString);
-            }
-        }
-        StringBuilder result = new StringBuilder();
-        for (String s : stack) {
-            for (int j = s.length() - 1; j >= 0; j--) {
-                result.append(s.charAt(j));
-            }
-        }
-        return result.toString();
-    }
-
-    static String unpackString2(String string) {
         Stack<Character> stack = new Stack<>();
 
         for (int i = 0; i < string.length(); i++) {
             if (string.charAt(i) == ']') {
-                StringBuilder decodedString = new StringBuilder();
+                ArrayList<Character> decodedString = new ArrayList<>();
 
                 while (stack.peek() != '[') {
-                    decodedString.append(stack.pop());
+                    decodedString.add(stack.pop());
                 }
                 stack.pop();
                 int factorInt = Integer.parseInt(stack.pop().toString());
-                String s = decodedString.toString();
                 for (int j = 0; j < factorInt; j++) {
-                    for (int k = s.length() - 1; k >= 0; k--) {
-                        stack.push(s.charAt(k));
+                    for (int k = decodedString.size() - 1; k >= 0; k--) {
+                        stack.push(decodedString.get(k));
                     }
                 }
             } else {
