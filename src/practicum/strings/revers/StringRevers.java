@@ -1,4 +1,4 @@
-package practicum.revers;
+package practicum.strings.revers;
 
 public class StringRevers {
     public static void main(String[] args) {

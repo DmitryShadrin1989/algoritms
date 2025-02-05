@@ -1,4 +1,4 @@
-package practicum.revers;
+package practicum.strings.revers;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
