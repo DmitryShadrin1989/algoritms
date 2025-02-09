@@ -1,13 +1,13 @@
 package practicum.interview.old;
 
-public class MaxLengthOnesAfterOneRemoval {
+public class LongestSubarrayOfAfterDeletingOneElement {
 
     public static void main(String[] args) {
         int[] nums = {1, 0, 1, 1, 0, 1};
-        System.out.println(longestOnesAfterRemoval(nums));
+        System.out.println(longestSubarray(nums));
     }
 
-    public static int longestOnesAfterRemoval(int[] nums) {
+    public static int longestSubarray(int[] nums) {
         int left = 0;
         int right = 0;
         int countZero = 0;
