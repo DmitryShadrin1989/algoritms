@@ -22,8 +22,8 @@ Output: 3, ['o','1','0']
 public class StringCompression {
 
     public static void main(String[] args) {
-        char[] chars = {'o','o','o','o','o','o','o','o','o','o'};
-        System.out.println(compress(chars));
+        char[] chars = {'a','a'};
+        System.out.println(compress2(chars));
     }
 
     public static int compress(char[] chars) {
@@ -86,5 +86,68 @@ public class StringCompression {
             }
             left++;
         }
+    }
+
+    public static int compress2(char[] chars) {
+        if (chars.length == 0 || chars.length == 1) {
+            return chars.length;
+        }
+
+        int left = 0;
+        int right = 1;
+        int count = 1;
+        while(right < chars.length) {
+            if (chars[left] == chars[right]) {
+                count++;
+                right++;
+                continue;
+            }
+
+            char[] countChars = String.valueOf(count).toCharArray();
+            int countIdx = 0;
+            ++left;
+            while(left < right) {
+                if (countIdx < countChars.length) {
+                    chars[left] = countChars[countIdx];
+                    countIdx++;
+                } else {
+                    chars[left] = ' ';
+                }
+                left++;
+            }
+            count = 1;
+            right++;
+        }
+
+        char[] countChars = String.valueOf(count).toCharArray();
+        int countIdx = 0;
+        ++left;
+        while(left < right) {
+            if (countIdx < countChars.length) {
+                chars[left] = countChars[countIdx];
+                countIdx++;
+            } else {
+                chars[left] = ' ';
+            }
+            left++;
+        }
+
+        left = 0;
+        right = 0;
+        while (right < chars.length) {
+            if (chars[left] != ' ') {
+                left++;
+                right++;
+                continue;
+            }
+
+            if (chars[right] != ' ') {
+                chars[left] = chars[right];
+                chars[right] = ' ';
+                left++;
+            }
+            right++;
+        }
+        return left;
     }
 }
