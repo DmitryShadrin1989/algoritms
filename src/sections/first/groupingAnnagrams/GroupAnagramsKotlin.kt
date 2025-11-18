@@ -22,6 +22,22 @@ Sample Output
 Итоговая сложность не хуже N*logN
 
  */
-fun groupAnagrams(items: Array<String>): List<List<String>> {
-    return listOf()
+fun main() {
+    val items = listOf("eat", "tea", "tan", "ate", "nat", "bat")
+    val result: List<List<String>> = groupAnagrams(items)
+
+    for (group in result) {
+        println(group)
+    }
+}
+
+private fun groupAnagrams(items: List<String>): List<List<String>> {
+    val map = mutableMapOf<String, MutableList<String>>()
+
+    for (item in items) {
+        val sorted = item.toCharArray().sorted().joinToString("")
+        map.getOrPut(sorted) { mutableListOf() }.add(item)
+    }
+
+    return map.values.map { it.sorted() }.toList()
 }
